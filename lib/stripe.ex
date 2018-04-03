@@ -26,17 +26,25 @@ defmodule Stripe do
     Alternatively, you can also set the secret key as an environment variable:
 
       STRIPE_SECRET_KEY=YOUR_SECRET_KEY
+
+    or you can pass it as a request option:
+
+    Stripe.Charge.create(charge, secret_key: YOUR_SECRET_KEY)
   """
 
-  defp get_secret_key do
-    System.get_env("STRIPE_SECRET_KEY") || 
-    Application.get_env(:stripe, :secret_key) || 
-    raise AuthenticationError, message: @missing_secret_key_error_message
+  defp get_secret_key(opts) do
+    case Keyword.get(opts, :secret_key) do
+      nil ->
+        System.get_env("STRIPE_SECRET_KEY") ||
+        Application.get_env(:stripe, :secret_key) ||
+        raise AuthenticationError, message: @missing_secret_key_error_message
+      secret_key -> secret_key
+    end
   end
 
   defp get_api_endpoint do
-    System.get_env("STRIPE_API_ENDPOINT") || 
-    Application.get_env(:stripe, :api_endpoint) || 
+    System.get_env("STRIPE_API_ENDPOINT") ||
+    Application.get_env(:stripe, :api_endpoint) ||
     @default_api_endpoint
   end
 
@@ -55,13 +63,13 @@ defmodule Stripe do
   end
 
   defp create_headers(opts) do
-    headers = 
-      [{"Authorization", "Bearer #{get_secret_key()}"},
+    headers =
+      [{"Authorization", "Bearer #{get_secret_key(opts)}"},
        {"User-Agent", "Stripe/v1 stripe-elixir/#{@client_version}"},
        {"Content-Type", "application/x-www-form-urlencoded"}]
 
-    case Keyword.get(opts, :stripe_account) do 
-      nil -> headers 
+    case Keyword.get(opts, :stripe_account) do
+      nil -> headers
       account_id -> [{"Stripe-Account", account_id} | headers]
     end
   end

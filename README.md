@@ -34,6 +34,12 @@ config :stripe, :secret_key, <YOUR_SECRET_KEY>
 export STRIPE_SECRET_KEY=<YOUR_SECRET_KEY>
 ```
 
+or you can pass it as a request option:
+
+```elixir
+Stripe.Charge.create(charge, secret_key: YOUR_SECRET_KEY)
+```
+
 ## Basic Usage
 
 This lib closely follows the official Ruby Client API.
@@ -45,7 +51,7 @@ This lib closely follows the official Ruby Client API.
 
 Returns `{:ok, RESPONSE_BODY}` when the request is successful.
 
-`{:error, %ERROR_STRUCT{}}` tuples are returned when there is a request/api error.  
+`{:error, %ERROR_STRUCT{}}` tuples are returned when there is a request/api error.
 See all error types at https://stripe.com/docs/api/ruby#errors
 
 ## Some Basic Examples
@@ -67,7 +73,7 @@ Stripe.Customer.create([{"email", "example@gmail.com"}])
 
 Retrieve that customer:
 
-```elixir   
+```elixir
 {:ok, customer} = Stripe.Customer.retrieve("cus_asdfghjkl")
 ```
 
@@ -92,9 +98,9 @@ To perform a Direct Charge on a connected stripe account, simply pass :stripe_ac
 Stripe.Charge.create([customer: "cus_asdfghjkl", amount: 400], stripe_account: "acct_sOMeAcCountId")
 ```
 
-#### Generate a Connect authorization url via `Stripe.Connect.authorize_url/1`. 
+#### Generate a Connect authorization url via `Stripe.Connect.authorize_url/1`.
 
-```elixir 
+```elixir
 Stripe.Connect.authorize_url([
   redirect_uri: <OPTIONAL CALLBACK URL>,
   state: <OPTIONAL CSRF TOKEN>,
@@ -102,10 +108,10 @@ Stripe.Connect.authorize_url([
 ])
 ```
 
-#### Options: 
-- `redirect_uri`: An optional callback url after authorization succeeds. 
+#### Options:
+- `redirect_uri`: An optional callback url after authorization succeeds.
 - `state`: You can protect your request from CSRF attacks by passing a csrf token.
-- `client_id`: You can pass in an optional client_id to be used for this url. Defaults to `STRIPE_CLIENT_ID` environment variable or `config :stripe, :client_id` config value. 
+- `client_id`: You can pass in an optional client_id to be used for this url. Defaults to `STRIPE_CLIENT_ID` environment variable or `config :stripe, :client_id` config value.
 
 
 ## Handling Webhooks
